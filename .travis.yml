@@ -7,6 +7,9 @@ jobs:
 branches:
   only:
     - master
+    # Ruby regex to match tags. Required, or travis won't trigger deploys when
+    # a new tag is pushed. Version tags should be of the form: v0.1.0
+    - /^v\d+\.\d+\.\d+.*$/
 
 before_install:
   - choco install zip unzip
@@ -33,5 +36,7 @@ script:
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  file: release.zip
+  file: main.zip
   skip_cleanup: true
+  on:
+    tags: true
