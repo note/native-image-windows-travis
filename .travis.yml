@@ -26,7 +26,7 @@ install:
 script:
   - sbt assembly
   - find target -iname "*.jar" -exec mv {} Main.jar \;
-  - build.bat
+  - ./build.bat
   - cp /c/Windows/System32/VCRUNTIME140.dll .
   - zip main.zip main.exe VCRUNTIME140.dll
 
