@@ -1,0 +1,37 @@
+jobs:
+  include:
+    - os: windows
+      language: shell
+      env: JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+
+branches:
+  only:
+    - master
+
+before_install:
+  - choco install zip unzip
+  - choco install visualstudio2017-workload-vctools
+  - curl -sL https://get.sdkman.io | bash
+  - mkdir -p "$HOME/.sdkman/etc/"
+  - echo sdkman_auto_answer=true > "$HOME/.sdkman/etc/config"
+  - echo sdkman_auto_selfupdate=true >> "$HOME/.sdkman/etc/config"
+  - "source $HOME/.sdkman/bin/sdkman-init.sh"
+
+install:
+  - sdk install java 20.0.0.r11-grl
+  - gu.cmd install native-image
+  - native-image.cmd --version
+  - sdk install sbt
+
+script:
+  - sbt assembly
+  - find target -iname "*.jar" -exec mv {} Main.jar \;
+  - build.bat
+  - cp /c/Windows/System32/VCRUNTIME140.dll .
+  - zip main.zip main.exe VCRUNTIME140.dll
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: release.zip
+  skip_cleanup: true
